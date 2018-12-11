@@ -3,17 +3,17 @@
     <section class="profile">
       <header-top title="我的"></header-top>
       <section class="profile-number">
-        <router-link to="/login" class="profile-link">
+        <router-link :to="userInfo._id?'/userinfo':'/login'" class="profile-link">
           <div class="profile_image">
             <i class="iconfont icon-person"></i>
           </div>
           <div class="user-info">
-            <p class="user-info-top">登录/注册</p>
+            <p class="user-info-top" v-if="!userInfo.phone">{{userInfo.name||'登陆/注册'}}</p>
             <p>
                 <span class="user-icon">
                   <i class="iconfont icon-shouji icon-mobile"></i>
                 </span>
-              <span class="icon-mobile-number">暂无绑定手机号</span>
+              <span class="icon-mobile-number">{{userInfo.phone||'暂无绑定手机号'}}</span>
             </p>
           </div>
           <span class="arrow">
@@ -89,152 +89,205 @@
           </div>
         </a>
       </section>
+      <section class="profile_my_order border-1px">
+        <mt-button type="danger" style="width:100%" v-if="userInfo._id" @click="logout">退出登陆</mt-button>
+      </section>
     </section>
   </div>
 </template>
 
 <script>
   import HeaderTop from 'components/HeaderTop/HeaderTop'
-    export default {
-      components:{
-        HeaderTop
+  import {mapState} from 'vuex'
+  import {MessageBox,Toast} from 'mint-ui'
+
+  export default {
+    computed: {
+      ...mapState(['userInfo'])
+    },
+    components: {
+      HeaderTop
+    },
+    methods: {
+      logout() {
+        MessageBox.confirm('确认退出吗').then(
+          action => {
+            this.$store.dispatch('logout')
+            Toast('完成')
+          },
+          action => {}
+        )
       }
     }
+  }
 </script>
 
 <style lang="stylus" scoped rel="stylesheet/stylus">
- @import "~common/stylus/mixins.styl"
- .profile //我的
-   overflow:hidden
-   width 100%
-   .profile-number
-     margin-top 45.5px
-     .profile-link
-       clearFix()
-       position relative
-       display block
-       background #02a774
-       padding 20px 10px
-       .profile_image
-         float left
-         width 60px
-         height 60px
-         border-radius 50%
-         overflow hidden
-         vertical-align top
-         .icon-person
-           background #e4e4e4
-           font-size 62px
-       .user-info
-         float left
-         margin-top 8px
-         margin-left 15px
-         p
-           font-weight: 700
-           font-size 18px
-           color #fff
-           &.user-info-top
-             padding-bottom 8px
-           .user-icon
-             display inline-block
-             margin-left -15px
-             margin-right 5px
-             width 20px
-             height 20px
-             .icon-mobile
-               font-size 30px
-               vertical-align text-top
-           .icon-mobile-number
-             font-size 14px
-             color #fff
-       .arrow
-         width 12px
-         height 12px
-         position absolute
-         right 15px
-         top 40%
-         .icon-jiantou1
-           color #fff
-           font-size 5px
-   .profile_info_data
-     bottom-border-1px(#e4e4e4)
-     width 100%
-     background #fff
-     overflow hidden
-     .info_data_list
-       clearFix()
-       .info_data_link
-         float left
-         width 33%
-         text-align center
-         border-right 1px solid #f1f1f1
-         .info_data_top
-           display block
-           width 100%
-           font-size 14px
-           color #333
-           padding 15px 5px 10px
-           span
-             display inline-block
-             font-size 30px
-             color #f90
-             font-weight 700
-             line-height 30px
-         .info_data_bottom
-           display inline-block
-           font-size 14px
-           color #666
-           font-weight 400
-           padding-bottom 10px
-       .info_data_link:nth-of-type(2)
-         .info_data_top
-           span
-             color #ff5f3e
-       .info_data_link:nth-of-type(3)
-         border 0
-         .info_data_top
-           span
-             color #6ac20b
-   .profile_my_order
-     top-border-1px(#e4e4e4)
-     margin-top 10px
-     background #fff
-     .my_order
-       display flex
-       align-items center
-       padding-left 15px
-       >span
-         display flex
-         align-items center
-         width 20px
-         height 20px
-         >.iconfont
-           margin-left -10px
-           font-size 30px
-         .icon-order-s
-           color #02a774
-         .icon-jifen
-           color #ff5f3e
-         .icon-vip
-           color #f90
-         .icon-fuwu
-           color #02a774
-       .my_order_div
-         width 100%
-         border-bottom 1px solid #f1f1f1
-         padding 18px 10px 18px 0
-         font-size 16px
-         color #333
-         display flex
-         justify-content space-between
-         span
-           display block
-         .my_order_icon
-           width 10px
-           height 10px
-           .icon-jiantou1
-             color #bbb
-             font-size 10px
+  @import "~common/stylus/mixins.styl"
+  .profile //我的
+    overflow: hidden
+    width 100%
+
+    .profile-number
+      margin-top 45.5px
+
+      .profile-link
+        clearFix()
+        position relative
+        display block
+        background #02a774
+        padding 20px 10px
+
+        .profile_image
+          float left
+          width 60px
+          height 60px
+          border-radius 50%
+          overflow hidden
+          vertical-align top
+
+          .icon-person
+            background #e4e4e4
+            font-size 62px
+
+        .user-info
+          float left
+          margin-top 8px
+          margin-left 15px
+
+          p
+            font-weight: 700
+            font-size 18px
+            color #fff
+
+            &.user-info-top
+              padding-bottom 8px
+
+            .user-icon
+              display inline-block
+              margin-left -15px
+              margin-right 5px
+              width 20px
+              height 20px
+
+              .icon-mobile
+                font-size 30px
+                vertical-align text-top
+
+            .icon-mobile-number
+              font-size 14px
+              color #fff
+
+        .arrow
+          width 12px
+          height 12px
+          position absolute
+          right 15px
+          top 40%
+
+          .icon-jiantou1
+            color #fff
+            font-size 5px
+
+    .profile_info_data
+      bottom-border-1px(#e4e4e4)
+      width 100%
+      background #fff
+      overflow hidden
+
+      .info_data_list
+        clearFix()
+
+        .info_data_link
+          float left
+          width 33%
+          text-align center
+          border-right 1px solid #f1f1f1
+
+          .info_data_top
+            display block
+            width 100%
+            font-size 14px
+            color #333
+            padding 15px 5px 10px
+
+            span
+              display inline-block
+              font-size 30px
+              color #f90
+              font-weight 700
+              line-height 30px
+
+          .info_data_bottom
+            display inline-block
+            font-size 14px
+            color #666
+            font-weight 400
+            padding-bottom 10px
+
+        .info_data_link:nth-of-type(2)
+          .info_data_top
+            span
+              color #ff5f3e
+
+        .info_data_link:nth-of-type(3)
+          border 0
+
+          .info_data_top
+            span
+              color #6ac20b
+
+    .profile_my_order
+      top-border-1px(#e4e4e4)
+      margin-top 10px
+      background #fff
+
+      .my_order
+        display flex
+        align-items center
+        padding-left 15px
+
+        > span
+          display flex
+          align-items center
+          width 20px
+          height 20px
+
+          > .iconfont
+            margin-left -10px
+            font-size 30px
+
+          .icon-order-s
+            color #02a774
+
+          .icon-jifen
+            color #ff5f3e
+
+          .icon-vip
+            color #f90
+
+          .icon-fuwu
+            color #02a774
+
+        .my_order_div
+          width 100%
+          border-bottom 1px solid #f1f1f1
+          padding 18px 10px 18px 0
+          font-size 16px
+          color #333
+          display flex
+          justify-content space-between
+
+          span
+            display block
+
+          .my_order_icon
+            width 10px
+            height 10px
+
+            .icon-jiantou1
+              color #bbb
+              font-size 10px
 
 
 </style>

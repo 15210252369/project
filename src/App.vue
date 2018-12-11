@@ -9,6 +9,11 @@
   import foot from 'components/foot/foot'
 
   export default {
+    mounted(){
+      this.$store.dispatch('getAddress')
+      this.$store.dispatch('getUserInfo')
+
+    },
     components: {
       foot
     }
@@ -17,7 +22,7 @@
 
 <style lang="stylus" scoped rel="stylesheet/stylus">
   .app
-    width:100%
+    width: 100%
     height: 100%
-    background:#f5f5f5
+    background: #f5f5f5
 </style>
